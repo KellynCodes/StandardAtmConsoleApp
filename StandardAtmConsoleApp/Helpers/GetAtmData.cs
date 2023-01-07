@@ -4,11 +4,11 @@ namespace StandardAtmConsoleApp.Helpers
 {
     public class GetAtmData
     {
-        public static Atm? _info;
+        public static Atm _info;
+
         public static Atm GetData()
         {
-         AtmData atmData = new();
-            foreach (var info in atmData.Data)
+            foreach (var info in Atm.Data)
             {
                 _info = info;
             }

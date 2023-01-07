@@ -1,9 +1,7 @@
 ﻿using ATM.BLL.Interfaces;
 using ATM.DATA.DataBase;
 using ATM.DATA.Domain;
-using System;
-using System.Linq;
-using System.Threading;
+using ATM.UI;
 
 namespace ATM.BLL.Implementation
 {
@@ -41,7 +39,7 @@ namespace ATM.BLL.Implementation
                 {
                    message.Alert($"Welcome back {UserDetails.UserName}");
                 AtmServices: Console.WriteLine("What would like to Do");
-                    Console.WriteLine("1.\t Check Balance\n2.\t Withdrawal\n3.\t Transfer\n4.\t Deposit\n5.\t Create new Account");
+                    Console.WriteLine("1.\t Check Balance\n2.\t Withdrawal\n3.\t Transfer\n4.\t Deposit");
                     string userInput = Console.ReadLine() ?? string.Empty;
                     if (string.IsNullOrWhiteSpace(userInput))
                     {
@@ -61,8 +59,6 @@ namespace ATM.BLL.Implementation
                             case 3: atmService.Transfer();
                                 break;
                             case 4: atmService.Deposit();
-                                break;
-                            case 5: atmService.CreateAccount();
                                 break;
                             default:
                                 
@@ -84,7 +80,6 @@ namespace ATM.BLL.Implementation
             }
 
         }
-
 
         /// <summary>
         /// When user wants to recet Pin

@@ -8,13 +8,13 @@ namespace ATM.UI
         private static readonly IAtmService atmService = new AtmService(new AdminService());
         private static readonly IAuthService authService = new AuthService();
         private static readonly IAdminService _adminService = new AdminService();
+        private static readonly IContinueOrEndProcess continueOrEndProcess = new ContinueOrEndProcess();
 
 
         public static void Main()
         {
             Console.Title = "Gt Bank Atm Machine";
             atmService.Start();
-
             GetUserChoice();
         }
 
@@ -22,7 +22,7 @@ namespace ATM.UI
         {
         Option:
             Console.WriteLine("Choose from the Option");
-            Console.WriteLine("1.\t Login As Admin. \n2.\t Login as User\n3\t Logout");
+            Console.WriteLine("1.\t Login As Admin. \n2.\t Login as User\n3.\t Create new Account\n4\t Quit App");
             string Answer = Console.ReadLine() ?? string.Empty;
             if (int.TryParse(Answer, out int Choice))
             {
@@ -35,10 +35,13 @@ namespace ATM.UI
                     /*  case (int)Choice.ChoiceTwo:*/
                     case 2:
                         Console.WriteLine("Please provide your details");
-                         authService.Login();
+                        authService.Login();
                         break;
                     case 3:
-                        Logout();
+                        atmService.CreateAccount();
+                        break;
+                    case 4:
+                        continueOrEndProcess.Answer();
                         break;
                     default:
                         Console.Clear();
@@ -52,35 +55,6 @@ namespace ATM.UI
                 Console.Clear();
                 Console.WriteLine("Please Enter a valid input");
                 goto Option;
-            }
-        }
-        public static void Logout()
-        {
-        Mbido: Console.WriteLine("Are you sure you want to Logout [NO/YES]");
-            string Answer = Console.ReadLine() ?? string.Empty;
-            if (string.IsNullOrWhiteSpace(Answer))
-            {
-                Console.Clear();
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Input was empty or not valid. Please try again");
-                Console.ResetColor();
-                goto Mbido;
-            }
-            if (Answer.Trim().ToUpper() == "YES")
-            {
-                authService.LogOut();
-            }
-            else if (Answer.Trim().ToUpper() == "NO")
-            {
-                Console.Clear();
-                Main();
-            }
-            else
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Please enter [NO/YES] for us to be certain you want to logout");
-                Console.ResetColor();
-                goto Mbido;
             }
         }
     }

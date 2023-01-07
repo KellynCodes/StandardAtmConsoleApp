@@ -27,9 +27,7 @@ namespace ATM.BLL.Implementation
         ChooseAccountType: Console.WriteLine("Choose you account type.\n1.\t Current\n2.\t Savings");
             if (int.TryParse(Console.ReadLine(), out int accType))
             {
-                message.Error("Please put a valid input");
-                goto ChooseAccountType;
-            }
+              
             switch (accType)
             {
                 case 1:
@@ -43,6 +41,12 @@ namespace ATM.BLL.Implementation
                     goto ChooseAccountType;
             }
             return _accountType;
+            }
+            else
+            {
+                message.Error("Please put a valid input");
+                goto ChooseAccountType;
+            }
         }
 
         public string GetEmail()

@@ -23,7 +23,7 @@ namespace ATM.BLL.Implementation
         private static int _cashDenomination;
         private static decimal _amount;
 
-        private static string? _enteredAmount;
+        private static decimal EnteredAmount { get; set; }
 
         public AtmService(IAdminService adminService) => _adminService = adminService;
         public AtmService() { }
@@ -63,6 +63,7 @@ namespace ATM.BLL.Implementation
                         {
                             message.Success($"{user.UserName} your account balance is {user.Balance}");
                         }
+                     
                         continueOrEndProcess.Answer();
                     }
                     else
@@ -115,8 +116,8 @@ namespace ATM.BLL.Implementation
                         message.Error("Entered value was not in the list. Please try again");
                         goto CheckBalance;
                 }
-                var CheckAccountType = AtmDB.Account.Where(user => user.AccountNo == AuthService.SessionUser.AccountNo && user.AccountType == _accountType);
-            AmountToWidthDraw: if (CheckAccountType.Any())
+                var UserAccount = AtmDB.Account.Where(user => user.AccountNo == AuthService.SessionUser.AccountNo && user.AccountType == _accountType);
+            AmountToWidthDraw: if (UserAccount.Any())
                 {
                     Console.WriteLine("How much do you want to withdraw");
                     Console.WriteLine("1. 500\t2. 1000\t3. 2000\n4. 5000\t5. 10000\t6. 20000\n7. Others");
@@ -124,22 +125,26 @@ namespace ATM.BLL.Implementation
                         switch (choice)
                         {
                             case 1:
-                                _enteredAmount = "500";
+                                EnteredAmount = 500;
+
                                 goto EnterDenomination;
                             case 2:
-                                _enteredAmount = "1000";
+                                EnteredAmount = 1000;
+
                                 goto EnterDenomination;
                             case 3:
-                                _enteredAmount = "2000";
+                                EnteredAmount = 2000;
+
                                 goto EnterDenomination;
                             case 4:
-                                _enteredAmount = "5000";
+                                EnteredAmount = 5000;
+
                                 goto EnterDenomination;
                             case 5:
-                                _enteredAmount = "10000";
+                                EnteredAmount = 10000;
                                 goto EnterDenomination;
                             case 6:
-                                _enteredAmount = "20000";
+                                EnteredAmount = 20000;
                                 goto EnterDenomination;
                             case 7:
                                 goto Others;
@@ -148,14 +153,20 @@ namespace ATM.BLL.Implementation
                                 goto AmountToWidthDraw;
                         }
                     Others: Console.WriteLine("How much do you want to withdraw");
+                    //create a funciton that will be called here in an if statment
                     if (!decimal.TryParse(Console.ReadLine(), out decimal amount))
                     {
                         message.Error("Input was not valid. Please enter only digits");
                         goto AmountToWidthDraw;
                     }
-                   decimal enterAmount = Convert.ToDecimal(_enteredAmount);
-                    enterAmount = _amount;
-                    _amount = amount;
+                    
+                   if(amount < 0)
+                    {
+                        _amount = EnteredAmount;
+                    }else if(amount > 0)
+                    {
+                        _amount = amount;
+                    }
                     var atm = GetAtmData.GetData();
                         if (_amount > atm.AvailableCash)
                         {
@@ -201,22 +212,23 @@ namespace ATM.BLL.Implementation
                             message.Error("Invalid input. Please try again.");
                             goto EnterDenomination;
                         }
-                       nextBlock: 
-                    foreach (var user in CheckAccountType)
+                       nextBlock:
+                    foreach (var user in UserAccount)
                         {
-                            if (_amount < user.Balance)
+                            if (_amount >= user.Balance)
                             {
+                                message.Error("Insufficient balance");
+                                goto AmountToWidthDraw;
+                            }
+                        else
+                        {
                                 user.Balance -= _amount;
                             GetAtmData.GetData().AvailableCash -= _amount;
                             message.Success($"Transaction successfull!. {_amount} have been debited from your account.  Your new account balance is {user.Balance}");
                             message.AlertInfo($"Cash denominations: {_cashDenomination}");
-                            }
-                            else
-                            {
-                            message.Error("Insufficient balance");
-                                goto AmountToWidthDraw;
-                            }
+                         }
                         }
+
                         continueOrEndProcess.Answer();
                    
                 }
@@ -248,12 +260,14 @@ namespace ATM.BLL.Implementation
                 }
                 bool isUserAccountTypeSavings = AuthService.SessionUser.AccountType == AccountType.Savings;
                 bool isUserAccountTypeCurrent = AuthService.SessionUser.AccountType == AccountType.Current;
-                if (isUserAccountTypeCurrent && amount > 500_000)
+                const decimal maximumAmountInCurrentAccount = 500_000;
+                const decimal maximumAmountInSavinsAccount = 100_000;
+                if (isUserAccountTypeCurrent && amount > maximumAmountInCurrentAccount)
                 {
                     message.Error("Amount should not be greater than 500000 in a current account");
                     goto EnterAmount;
                 }
-                if (isUserAccountTypeSavings && amount > 100_000)
+                if (isUserAccountTypeSavings && amount > maximumAmountInSavinsAccount)
                 {
                     message.Error("Amount should not be greater than 500000 in a current account");
                     goto EnterAmount;
@@ -422,6 +436,7 @@ namespace ATM.BLL.Implementation
 
         public void CreateAccount()
         {
+            long userID = AtmDB.Users.Last().Id + 1;
             string accountNumber = createAccount.AccountNumber();
             AccountType accountType = createAccount.GetAccountType();
             string email = createAccount.GetEmail();
@@ -431,11 +446,13 @@ namespace ATM.BLL.Implementation
             decimal Balance = 0.00m;
             string createdDate = DateTime.Now.ToLongDateString();
 
-            var NewUser = new Customer(id: 7, password: "kellyncodesboom") { FullName = fullName, Email = email, };
-            var NewAccount = new Account { Id = 7, UserId = 7, UserName = userName, AccountNo = accountNumber, AccountType = accountType, Pin = pin, Balance = Balance, CreatedDate = createdDate };
+            var NewUser = new Customer(id: userID, password: "kellyncodesboom") { FullName = fullName, Email = email, };
+            var NewAccount = new Account {Id = userID, UserId = userID, UserName = userName, AccountNo = accountNumber, AccountType = accountType, Pin = pin, Balance = Balance, CreatedDate = createdDate };
             AtmDB.Users.Add(NewUser);
             AtmDB.Account.Add(NewAccount);
             message.Success($"{userName} your account have been created successfully!.");
+            message.Alert($"Your ID {userID} and your account number is {accountNumber}");
+            message.Error($"Make sure you copy your account [{accountNumber}] and also memorize your user ID");
             continueOrEndProcess.Answer();
         }
 

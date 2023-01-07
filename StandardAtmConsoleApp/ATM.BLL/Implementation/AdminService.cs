@@ -1,6 +1,5 @@
 ﻿using ATM.BLL.Interfaces;
 using ATM.DATA.DataBase;
-using ATM.DATA.Domain;
 using ATM.UI;
 using StandardAtmConsoleApp.Helpers;
 
@@ -46,6 +45,12 @@ namespace ATM.BLL.Implementation
                         case 1:
                             ReloadCash();
                             break;
+                        case 2:
+                            //SetCashLimit();
+                            break;
+                        case 3:
+                            IAuthService.ViewListOfUsers();
+                            break;
                         default:
                             message.Error("Entered value was not in the list");
                             goto AtmServices;
@@ -66,8 +71,7 @@ namespace ATM.BLL.Implementation
             {
                 const int ThreeSeconds = 3000;
                 var atm = GetAtmData.GetData();
-
-               message.Success($"Reloading {amount}...");
+                message.Success($"Reloading {amount}...");
                 Thread.Sleep(ThreeSeconds);
                 atm.AvailableCash += amount;
                 message.Alert($"New Balance :: {atm.AvailableCash}");
