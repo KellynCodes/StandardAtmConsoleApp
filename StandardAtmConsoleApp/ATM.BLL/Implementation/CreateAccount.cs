@@ -95,6 +95,18 @@ namespace ATM.BLL.Implementation
             return userName;
         }
 
+        public string GetPassword()
+        {
+        EnterPassword: Console.WriteLine("Enter password");
+            string userPassword = Console.ReadLine() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(userPassword))
+            {
+                message.Error("Empty input. Please try again.");
+                goto EnterPassword;
+            }
+            return userPassword;
+        }
+
         public string GetPin()
         {
         EnterYourPin: Console.WriteLine("Enter your preffered pin.\n Note: this will serve as the secret number to access your account.");

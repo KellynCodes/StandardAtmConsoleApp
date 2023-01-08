@@ -31,7 +31,6 @@ namespace ATM.BLL.Implementation
         {
             GetAtmData.GetData().AvailableCash = 6_000.90m;
             Console.WriteLine($"{GetAtmData.GetData().Name} has booted!");
-            Console.WriteLine($"{GetAtmData.GetData().AvailableCash}");
             Console.WriteLine("Insert Card!");
         }
 
@@ -334,6 +333,7 @@ namespace ATM.BLL.Implementation
                         if (userInput.Trim().ToUpper() == "YES")
                         {
                             message.Success($"Transaction successfull!. {AuthService.SessionUser.UserName} {amount} has been debited from your account. You just transfered {amount} to {Recepient.UserName} on {DateTime.Now.ToLongDateString()}\n Your new balance is {newBalance}");
+                            continueOrEndProcess.Answer();
                         }
                         else if (userInput.Trim().ToUpper() == "NO")
                         {
@@ -436,23 +436,24 @@ namespace ATM.BLL.Implementation
 
         public void CreateAccount()
         {
-            long userID = AtmDB.Users.Last().Id + 1;
+            long userID = AtmDB.Account.Last().Id + 1;
             string accountNumber = createAccount.AccountNumber();
             AccountType accountType = createAccount.GetAccountType();
             string email = createAccount.GetEmail();
             string fullName = createAccount.GetFullName();
             string userName = createAccount.UserName();
+            string userPassword = createAccount.GetPassword();
             string pin = createAccount.GetPin();
             decimal Balance = 0.00m;
             string createdDate = DateTime.Now.ToLongDateString();
 
-            var NewUser = new Customer(id: userID, password: "kellyncodesboom") { FullName = fullName, Email = email, };
+            var NewUser = new Customer(id: userID, password: userPassword) { FullName = fullName, Email = email, };
             var NewAccount = new Account {Id = userID, UserId = userID, UserName = userName, AccountNo = accountNumber, AccountType = accountType, Pin = pin, Balance = Balance, CreatedDate = createdDate };
             AtmDB.Users.Add(NewUser);
             AtmDB.Account.Add(NewAccount);
             message.Success($"{userName} your account have been created successfully!.");
             message.Alert($"Your ID {userID} and your account number is {accountNumber}");
-            message.Error($"Make sure you copy your account [{accountNumber}] and also memorize your user ID");
+            message.AlertInfo($"Make sure you copy your account [{accountNumber}] and also memorize your user ID");
             continueOrEndProcess.Answer();
         }
 

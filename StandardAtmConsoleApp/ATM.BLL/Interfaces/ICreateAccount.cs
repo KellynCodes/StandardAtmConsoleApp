@@ -9,6 +9,7 @@ namespace ATM.BLL.Interfaces
         string GetEmail();
         string AccountNumber();
         AccountType GetAccountType();
+        string GetPassword();
         string GetPin();
     }
 }

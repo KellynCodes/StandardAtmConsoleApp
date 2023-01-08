@@ -8,7 +8,7 @@ namespace ATM.UI
         private static readonly IAtmService atmService = new AtmService(new AdminService());
         private static readonly IAuthService authService = new AuthService();
         private static readonly IAdminService _adminService = new AdminService();
-        private static readonly IContinueOrEndProcess continueOrEndProcess = new ContinueOrEndProcess();
+        private static readonly IMessage message = new Message();
 
 
         public static void Main()
@@ -41,7 +41,7 @@ namespace ATM.UI
                         atmService.CreateAccount();
                         break;
                     case 4:
-                        continueOrEndProcess.Answer();
+                        Logout();
                         break;
                     default:
                         Console.Clear();
@@ -55,6 +55,30 @@ namespace ATM.UI
                 Console.Clear();
                 Console.WriteLine("Please Enter a valid input");
                 goto Option;
+            }
+        }
+        public static void Logout()
+        {
+        Mbido: Console.WriteLine("Are you sure you want to Logout [NO/YES]");
+            string Answer = Console.ReadLine() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(Answer))
+            {
+                message.Error("Input was empty or not valid. Please try again");
+                goto Mbido;
+            }
+            if (Answer.Trim().ToUpper() == "YES")
+            {
+                authService.LogOut();
+            }
+            else if (Answer.Trim().ToUpper() == "NO")
+            {
+                Console.Clear();
+                Main();
+            }
+            else
+            {
+                message.Error("Please enter [NO/YES] for us to be certain you want to logout");
+                goto Mbido;
             }
         }
     }

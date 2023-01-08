@@ -97,8 +97,9 @@ namespace ATM.BLL.Implementation
         /// </summary>
         public void LogOut()
         {
+            const int ThreeSeconds = 3000;
             message.Error("Logging out....\nPLease Wait.");
-            Thread.Sleep(3000);
+            Thread.Sleep(ThreeSeconds);
         }
     }
 }

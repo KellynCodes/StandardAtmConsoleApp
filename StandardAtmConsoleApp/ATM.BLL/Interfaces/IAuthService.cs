@@ -15,12 +15,11 @@ namespace ATM.BLL.Interfaces
 
         public static void ViewListOfUsers()
         {
-            IContinueOrEndProcess continueOrEndProcess = new ContinueOrEndProcess();
             foreach (var users in AtmDB.Account)
             {
                 Console.WriteLine($"{users.UserId} {users.UserName}");
             }
-            continueOrEndProcess.Answer();
+            Program.Logout();
         }
 
     }
