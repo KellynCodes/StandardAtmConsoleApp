@@ -21,7 +21,8 @@ namespace ATM.BLL.Implementation
         private const int Aday = 1;
         private const int OneWeek = 7;
         private static int _cashDenomination;
-        private static decimal _amount;
+        private static decimal Amount { get; set; }
+        private static decimal ChoiceAmount;
 
         private static decimal EnteredAmount { get; set; }
 
@@ -31,6 +32,7 @@ namespace ATM.BLL.Implementation
         {
             GetAtmData.GetData().AvailableCash = 6_000.90m;
             Console.WriteLine($"{GetAtmData.GetData().Name} has booted!");
+            Console.WriteLine($"{GetAtmData.GetData().AvailableCash}");
             Console.WriteLine("Insert Card!");
         }
 
@@ -153,39 +155,41 @@ namespace ATM.BLL.Implementation
                         }
                     Others: Console.WriteLine("How much do you want to withdraw");
                     //create a funciton that will be called here in an if statment
-                    if (!decimal.TryParse(Console.ReadLine(), out decimal amount))
+
+                    if (!decimal.TryParse(Console.ReadLine(), out ChoiceAmount))
                     {
                         message.Error("Input was not valid. Please enter only digits");
                         goto AmountToWidthDraw;
                     }
-                    
-                   if(amount < 0)
+                EnterDenomination: Console.WriteLine("Enter denomination to despense");
+
+                    if (ChoiceAmount <= 0)
                     {
-                        _amount = EnteredAmount;
-                    }else if(amount > 0)
+                        Amount = EnteredAmount;
+                    }
+                    else if (ChoiceAmount > 0)
                     {
-                        _amount = amount;
+                        Amount = ChoiceAmount;
                     }
                     var atm = GetAtmData.GetData();
-                        if (_amount > atm.AvailableCash)
-                        {
-                            message.Alert($"Sorry atm is out of cash. Available amount is {atm.AvailableCash}");
-                            Program.GetUserChoice();
-                        }
-                        if (_amount > (int)WithdrawalLimit.Weekly)
-                        {
-                            message.Error("You cannot withdraw more than 100k in a week");
-                            goto AmountToWidthDraw;
-                        }
-                        if (_amount == (int)WithdrawalLimit.Daily)
-                        {
-                            _days += Aday;
-                        }
-                        if (_amount == (int)WithdrawalLimit.Weekly)
-                        {
-                            _days = OneWeek;
-                        }
-                EnterDenomination: Console.WriteLine("Enter denomination to despense");
+                    if (Amount > atm.AvailableCash)
+                    {
+                        message.Alert($"Sorry atm is out of cash. Available amount is {atm.AvailableCash}");
+                        Program.GetUserChoice();
+                    }
+                    if (Amount > (int)WithdrawalLimit.Weekly)
+                    {
+                        message.Error("You cannot withdraw more than 100k in a week");
+                        goto AmountToWidthDraw;
+                    }
+                    if (Amount == (int)WithdrawalLimit.Daily)
+                    {
+                        _days += Aday;
+                    }
+                    if (Amount == (int)WithdrawalLimit.Weekly)
+                    {
+                        _days = OneWeek;
+                    }
                     Console.WriteLine("1.\t 1000\t2.\t 500\n3.\t 200");
                         if (int.TryParse(Console.ReadLine(), out int CashDenomination))
                         {
@@ -214,16 +218,16 @@ namespace ATM.BLL.Implementation
                        nextBlock:
                     foreach (var user in UserAccount)
                         {
-                            if (_amount >= user.Balance)
+                            if (Amount >= user.Balance)
                             {
                                 message.Error("Insufficient balance");
                                 goto AmountToWidthDraw;
                             }
                         else
                         {
-                                user.Balance -= _amount;
-                            GetAtmData.GetData().AvailableCash -= _amount;
-                            message.Success($"Transaction successfull!. {_amount} have been debited from your account.  Your new account balance is {user.Balance}");
+                                user.Balance -= Amount;
+                            GetAtmData.GetData().AvailableCash -= Amount;
+                            message.Success($"Transaction successfull!. {Amount} have been debited from your account.  Your new account balance is {user.Balance}");
                             message.AlertInfo($"Cash denominations: {_cashDenomination}");
                          }
                         }
@@ -243,6 +247,7 @@ namespace ATM.BLL.Implementation
                 goto CheckBalance;
             }
         }
+
         /// <summary>
         /// Method that handles transfer of money
         /// </summary>
