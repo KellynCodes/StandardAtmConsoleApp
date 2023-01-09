@@ -1,8 +1,7 @@
 ﻿using ATM.BLL.Interfaces;
-using ATM.DATA.DataBase;
-using ATM.DATA.Domain;
 using ATM.DATA.Enums;
-using System;
+using StandardAtmConsoleApp.ATM.DATA.Enums;
+using StandardAtmConsoleApp.Helpers;
 
 namespace ATM.BLL.Implementation
 {
@@ -30,10 +29,10 @@ namespace ATM.BLL.Implementation
               
             switch (accType)
             {
-                case 1:
+                case (int)SwitchCase.One:
                     _accountType = AccountType.Current;
                     break;
-                case 2:
+                case (int)SwitchCase.Two:
                     _accountType = AccountType.Savings;
                     break;
                 default:
@@ -97,26 +96,25 @@ namespace ATM.BLL.Implementation
 
         public string GetPassword()
         {
-        EnterPassword: Console.WriteLine("Enter password");
-            string userPassword = Console.ReadLine() ?? string.Empty;
-            if (string.IsNullOrWhiteSpace(userPassword))
-            {
-                message.Error("Empty input. Please try again.");
-                goto EnterPassword;
-            }
-            return userPassword;
+        Console.WriteLine("Enter password");
+          return SecretInput.Hash();
+        }
+
+        public string ConfirmPassword()
+        {
+            Console.WriteLine("Re-enter your password");
+            return SecretInput.Hash();
         }
 
         public string GetPin()
         {
         EnterYourPin: Console.WriteLine("Enter your preffered pin.\n Note: this will serve as the secret number to access your account.");
-            string Pin = Console.ReadLine() ?? string.Empty;
-            if (string.IsNullOrWhiteSpace(Pin))
+            if (string.IsNullOrWhiteSpace(SecretInput.Hash()))
             {
                 message.Error("Empty input. Please try again.");
                 goto EnterYourPin;
             }
-            return Pin;
+            return SecretInput.Hash();
         }
     }
 }

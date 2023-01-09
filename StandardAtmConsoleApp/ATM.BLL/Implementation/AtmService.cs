@@ -3,6 +3,7 @@ using ATM.DATA.DataBase;
 using ATM.DATA.Domain;
 using ATM.DATA.Enums;
 using ATM.UI;
+using StandardAtmConsoleApp.ATM.DATA.Enums;
 using StandardAtmConsoleApp.Helpers;
 
 namespace ATM.BLL.Implementation
@@ -32,7 +33,6 @@ namespace ATM.BLL.Implementation
         {
             GetAtmData.GetData().AvailableCash = 6_000.90m;
             Console.WriteLine($"{GetAtmData.GetData().Name} has booted!");
-            Console.WriteLine($"{GetAtmData.GetData().AvailableCash}");
             Console.WriteLine("Insert Card!");
         }
 
@@ -46,10 +46,10 @@ namespace ATM.BLL.Implementation
                 {
                     switch (answer)
                     {
-                        case 1:
+                        case (int)SwitchCase.One:
                             _accountType = AccountType.Current;
                             break;
-                        case 2:
+                        case (int)SwitchCase.Two:
                             _accountType = AccountType.Savings;
                             break;
                         default:
@@ -106,10 +106,10 @@ namespace ATM.BLL.Implementation
             {
                 switch (answer)
                 {
-                    case 1:
+                    case (int)SwitchCase.One:
                         _accountType = AccountType.Current;
                         break;
-                    case 2:
+                    case (int)SwitchCase.Two:
                         _accountType = AccountType.Savings;
                         break;
                     default:
@@ -125,29 +125,29 @@ namespace ATM.BLL.Implementation
                     if (int.TryParse(Console.ReadLine(), out int choice))
                         switch (choice)
                         {
-                            case 1:
+                            case (int)SwitchCase.One:
                                 EnteredAmount = 500;
 
                                 goto EnterDenomination;
-                            case 2:
+                            case (int)SwitchCase.Two:
                                 EnteredAmount = 1000;
 
                                 goto EnterDenomination;
-                            case 3:
+                            case (int)SwitchCase.Three:
                                 EnteredAmount = 2000;
 
                                 goto EnterDenomination;
-                            case 4:
+                            case (int)SwitchCase.Four:
                                 EnteredAmount = 5000;
 
                                 goto EnterDenomination;
-                            case 5:
+                            case (int)SwitchCase.Five:
                                 EnteredAmount = 10000;
                                 goto EnterDenomination;
-                            case 6:
+                            case (int)SwitchCase.Six:
                                 EnteredAmount = 20000;
                                 goto EnterDenomination;
-                            case 7:
+                            case (int)SwitchCase.Seven:
                                 goto Others;
                             default:
                                 message.Error("Input was not in the list. Please try again.");
@@ -195,14 +195,14 @@ namespace ATM.BLL.Implementation
                         {
                             switch (CashDenomination)
                             {
-                                case 1:
+                                case (int)SwitchCase.One:
                                     _cashDenomination = (int)Denominations.OneThousand;
                                     goto nextBlock;
-                                case 2:
+                                case (int)SwitchCase.Two:
                                     _cashDenomination = (int)Denominations.FiveHundred;
                                     goto nextBlock;
 
-                                case 3:
+                                case (int)SwitchCase.Three:
                                     _cashDenomination = (int)Denominations.TwoHundred;
                                     goto nextBlock;
                                 default:
@@ -285,6 +285,7 @@ namespace ATM.BLL.Implementation
 
         EnterAccountNumber: Console.WriteLine("Enter account number");
             string accountNumber = Console.ReadLine() ?? string.Empty;
+           
             if (string.IsNullOrWhiteSpace(accountNumber))
             {
                 message.Error("Input was empty or not valid");
@@ -405,10 +406,10 @@ namespace ATM.BLL.Implementation
             }
             switch (answer)
             {
-                case 1:
+                case (int)SwitchCase.One:
                     _accountType = AccountType.Current;
                     break;
-                case 2:
+                case (int)SwitchCase.Two:
                     _accountType = AccountType.Savings;
                     break;
                 default:
@@ -441,14 +442,24 @@ namespace ATM.BLL.Implementation
 
         public void CreateAccount()
         {
-            long userID = AtmDB.Account.Last().Id + 1;
+            long userID = AtmDB.Users.Last().Id + 1;
             string accountNumber = createAccount.AccountNumber();
             AccountType accountType = createAccount.GetAccountType();
             string email = createAccount.GetEmail();
             string fullName = createAccount.GetFullName();
             string userName = createAccount.UserName();
-            string userPassword = createAccount.GetPassword();
-            string pin = createAccount.GetPin();
+            UserPassword: string userPassword = createAccount.GetPassword();
+            string ReEnteredPassword = createAccount.ConfirmPassword();
+            if(userPassword == ReEnteredPassword)
+            {
+                goto EnterPin;
+            }
+            else
+            {
+                message.Error("Password do not match please try again.");
+                goto UserPassword;
+            }
+          EnterPin: string pin = createAccount.GetPin();
             decimal Balance = 0.00m;
             string createdDate = DateTime.Now.ToLongDateString();
 
@@ -457,7 +468,7 @@ namespace ATM.BLL.Implementation
             AtmDB.Users.Add(NewUser);
             AtmDB.Account.Add(NewAccount);
             message.Success($"{userName} your account have been created successfully!.");
-            message.Alert($"Your ID {userID} and your account number is {accountNumber}");
+            message.AlertInfo($"Your ID is {userID} and your account number is {accountNumber}");
             message.AlertInfo($"Make sure you copy your account [{accountNumber}] and also memorize your user ID");
             continueOrEndProcess.Answer();
         }

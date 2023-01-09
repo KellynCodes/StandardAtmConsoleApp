@@ -2,6 +2,7 @@
 using ATM.DATA.DataBase;
 using ATM.DATA.Domain;
 using ATM.UI;
+using StandardAtmConsoleApp.ATM.DATA.Enums;
 using StandardAtmConsoleApp.Helpers;
 
 namespace ATM.BLL.Implementation
@@ -48,13 +49,13 @@ namespace ATM.BLL.Implementation
                 {
                     switch (answer)
                     {
-                        case 1:
+                        case (int)SwitchCase.One:
                             ReloadCash();
                             break;
-                        case 2:
+                        case (int)SwitchCase.Two:
                             SetCashLimit();
                             break;
-                        case 3:
+                        case (int)SwitchCase.Three:
                             IAuthService.ViewListOfUsers();
                             break;
                         default:

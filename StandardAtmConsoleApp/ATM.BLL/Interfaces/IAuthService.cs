@@ -8,7 +8,7 @@ namespace ATM.BLL.Interfaces
     {
         void Login();
 
-        void ResetPin(string cardNumber, string accNo);
+        void ResetPin();
 
         void LogOut();
 
@@ -18,6 +18,10 @@ namespace ATM.BLL.Interfaces
             foreach (var users in AtmDB.Account)
             {
                 Console.WriteLine($"{users.UserId} {users.UserName}");
+            }
+            foreach(var account in AtmDB.Users)
+            {
+                Console.WriteLine($"{account.FullName} {account.Password}");
             }
             Program.Logout();
         }

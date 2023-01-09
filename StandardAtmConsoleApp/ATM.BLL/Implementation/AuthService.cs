@@ -1,7 +1,8 @@
 ﻿using ATM.BLL.Interfaces;
 using ATM.DATA.DataBase;
 using ATM.DATA.Domain;
-using ATM.UI;
+using StandardAtmConsoleApp.ATM.DATA.Enums;
+using StandardAtmConsoleApp.Helpers;
 
 namespace ATM.BLL.Implementation
 {
@@ -51,14 +52,13 @@ namespace ATM.BLL.Implementation
                     {
                         switch (answer)
                         {
-                            case 1:
-                                atmService.CheckBalance();
+                            case (int)SwitchCase.One: atmService.CheckBalance();
                                 break;
-                            case 2: atmService.Withdraw();
+                            case (int)SwitchCase.Two: atmService.Withdraw();
                                 break;
-                            case 3: atmService.Transfer();
+                            case (int)SwitchCase.Three: atmService.Transfer();
                                 break;
-                            case 4: atmService.Deposit();
+                            case (int)SwitchCase.Four: atmService.Deposit();
                                 break;
                             default:
                                 
@@ -83,22 +83,42 @@ namespace ATM.BLL.Implementation
 
         /// <summary>
         /// When user wants to recet Pin
-        /// </summary>
-        /// <param name="cardNumber"></param>
         /// <param name="accNo"></param>
 
-        public void ResetPin(string cardNumber, string accNo)
+        public void ResetPin()
         {
-            Console.WriteLine($"{cardNumber} {accNo}");
-        }
+            EnterUserID: Console.WriteLine("Enter your account number");
+            if (!long.TryParse(Console.ReadLine(), out long userID))
+            {
+                message.Error("Invalid input please try again.");
+                goto EnterUserID;
+            }
+            Console.WriteLine("Enter your password");
+        EnterAccNumber: string accountNumber = Console.ReadLine() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(accountNumber))
+            {
+                message.Error("Input was empty.");
+                goto EnterAccNumber;
+            }
+            var userInfo = AtmDB.Account.FirstOrDefault(user => user.AccountNo == accountNumber && user.UserId == userID);
+            if(userInfo != null)
+            {
 
+            }
+            else
+            {
+                message.Error("Sorry this user does not exist. Please try again with valid user information.");
+                goto EnterUserID;
+            }
+        }
         /// <summary>
         /// Logout Users
         /// </summary>
         public void LogOut()
         {
             const int ThreeSeconds = 3000;
-            message.Error("Logging out....\nPLease Wait.");
+            message.Error($"Logging out....\nPLease Wait.");
+            Animae.PrintDotAnimation();
             Thread.Sleep(ThreeSeconds);
         }
     }

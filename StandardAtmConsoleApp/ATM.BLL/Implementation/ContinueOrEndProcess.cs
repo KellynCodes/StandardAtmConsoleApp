@@ -1,6 +1,5 @@
 ﻿using ATM.BLL.Implementation;
 using ATM.BLL.Interfaces;
-using ATM.DATA.Domain;
 using StandardAtmConsoleApp.Helpers;
 
 namespace ATM.UI
@@ -31,7 +30,7 @@ namespace ATM.UI
                 EndProcess();
             }else if(answer.Trim().ToUpper() == "NO")
             {
-                ContinueProcess();
+                Program.GetUserChoice();
             }
             else
             {

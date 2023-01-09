@@ -1,5 +1,6 @@
 ﻿using ATM.BLL.Implementation;
 using ATM.BLL.Interfaces;
+using StandardAtmConsoleApp.ATM.DATA.Enums;
 
 namespace ATM.UI
 {
@@ -28,19 +29,17 @@ namespace ATM.UI
             {
                 switch (Choice)
                 {
-                    /* case (int)Choice.ChoiceOne:*/
-                    case 1:
+                    case (int)SwitchCase.One:
                         _adminService.LoginAdmin();
                         break;
-                    /*  case (int)Choice.ChoiceTwo:*/
-                    case 2:
+                    case (int)SwitchCase.Two:
                         Console.WriteLine("Please provide your details");
                         authService.Login();
                         break;
-                    case 3:
+                    case (int)SwitchCase.Three:
                         atmService.CreateAccount();
                         break;
-                    case 4:
+                    case (int)SwitchCase.Four:
                         Logout();
                         break;
                     default:
