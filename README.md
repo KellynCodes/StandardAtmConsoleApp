@@ -1,5 +1,5 @@
 # StandardAtmConsoleApp
-* FEATURES
+#### FEATURES
 * [X] ADMIN FEATURES
   * [X] Cash Reload
   * [X] Setting Cash Limit
@@ -12,6 +12,6 @@
   * [x] Deposit
   * [x] Bill Payment
  
- * EXTRA FEATURES
+ #### EXTRA FEATURES
  * [X]  Hashing of password, Pin and Account number.
  * [x]  Dot animation on loading.
