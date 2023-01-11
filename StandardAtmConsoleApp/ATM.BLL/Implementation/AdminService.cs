@@ -15,7 +15,7 @@ namespace ATM.BLL.Implementation
         private User SessionAdmin { get; set; }
         public decimal CashLimit { get; set; }
 
-        public void LoginAdmin()
+        public async Task LoginAdmin()
         {
         Start: Console.WriteLine("Enter your Email");
             string UserEmail = Console.ReadLine() ?? string.Empty;
@@ -50,13 +50,13 @@ namespace ATM.BLL.Implementation
                     switch (answer)
                     {
                         case (int)SwitchCase.One:
-                            ReloadCash();
+                          await ReloadCash();
                             break;
                         case (int)SwitchCase.Two:
                             SetCashLimit();
                             break;
                         case (int)SwitchCase.Three:
-                            IAuthService.ViewListOfUsers();
+                         IAuthService.ViewListOfUsers();
                             break;
                         default:
                             message.Error("Entered value was not in the list");
@@ -78,6 +78,7 @@ namespace ATM.BLL.Implementation
             if (decimal.TryParse(Console.ReadLine(), out decimal cashLimit))
             {
                 CashLimit = cashLimit;
+                message.Success($"{SessionAdmin.FullName} Cash limit set successfully.");
             }
             else
             {
@@ -87,7 +88,7 @@ namespace ATM.BLL.Implementation
             continueOrEndProcess.Answer();
         }
 
-        public void ReloadCash()
+        public async Task ReloadCash()
         {
         EnterAmount: Console.WriteLine("Enter amount to reload");
             if (decimal.TryParse(Console.ReadLine(), out decimal amount))
@@ -95,7 +96,7 @@ namespace ATM.BLL.Implementation
                 const int ThreeSeconds = 3000;
                 var atm = GetAtmData.GetData();
                 message.Success($"Reloading {amount}...");
-                Thread.Sleep(ThreeSeconds);
+                await Task.Delay(ThreeSeconds);
                 atm.AvailableCash += amount;
                 message.Alert($"New Balance :: {atm.AvailableCash}");
                 Program.GetUserChoice();

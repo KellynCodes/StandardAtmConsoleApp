@@ -9,7 +9,7 @@ namespace ATM.BLL.Interfaces
         void Withdraw();
         void Transfer();
         void Deposit();
-        void PayBill(Bill bill);
+        void PayBill();
         void CreateAccount();
         void ReloadCash(decimal amount);
 

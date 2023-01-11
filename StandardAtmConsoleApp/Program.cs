@@ -23,7 +23,7 @@ namespace ATM.UI
         {
         Option:
             Console.WriteLine("Choose from the Option");
-            Console.WriteLine("1.\t Login As Admin. \n2.\t Login as User\n3.\t Create new Account\n4\t Quit App");
+            Console.WriteLine("1.\t Login As Admin. \n2.\t Login as User\n3.\t Recet Pin\n4.\t Create new Account\n5`\t Quit App");
             string Answer = Console.ReadLine() ?? string.Empty;
             if (int.TryParse(Answer, out int Choice))
             {
@@ -37,9 +37,12 @@ namespace ATM.UI
                         authService.Login();
                         break;
                     case (int)SwitchCase.Three:
+                        authService.ResetPin();
+                        break;  
+                    case (int)SwitchCase.Four:
                         atmService.CreateAccount();
                         break;
-                    case (int)SwitchCase.Four:
+                    case (int)SwitchCase.Five:
                         Logout();
                         break;
                     default:

@@ -8,20 +8,16 @@ namespace ATM.BLL.Interfaces
     {
         void Login();
 
-        void ResetPin();
+        Task ResetPin();
 
         void LogOut();
 
 
         public static void ViewListOfUsers()
         {
-            foreach (var users in AtmDB.Account)
+            foreach (var account  in AtmDB.Account)
             {
-                Console.WriteLine($"{users.UserId} {users.UserName}");
-            }
-            foreach(var account in AtmDB.Users)
-            {
-                Console.WriteLine($"{account.FullName} {account.Password}");
+                Console.WriteLine($"{account.UserId} {account.UserName}");
             }
             Program.Logout();
         }

@@ -3,6 +3,8 @@ using ATM.DATA.DataBase;
 using ATM.DATA.Domain;
 using ATM.DATA.Enums;
 using ATM.UI;
+using StandardAtmConsoleApp.ATM.BLL.Interfaces;
+using StandardAtmConsoleApp.ATM.BLL.Implementation;
 using StandardAtmConsoleApp.ATM.DATA.Enums;
 using StandardAtmConsoleApp.Helpers;
 
@@ -273,7 +275,7 @@ namespace ATM.BLL.Implementation
                 }
                 if (isUserAccountTypeSavings && amount > maximumAmountInSavinsAccount)
                 {
-                    message.Error("Amount should not be greater than 500000 in a current account");
+                    message.Error("Amount should not be greater than 100000 in a current account");
                     goto EnterAmount;
                 }
             }
@@ -381,10 +383,7 @@ namespace ATM.BLL.Implementation
         /// <summary>
         /// Method that handles money deposit.
         /// </summary>
-        /// <param name="accountNo">User account number</param>
-        /// <param name="accountType">User account type. Current | Savings</param>
-        /// <param name="amount">Amount to withdraw</param>
-
+      
         public void Deposit()
         {
         EnterAccountumber: message.Alert("Enter your account number.");
@@ -435,9 +434,28 @@ namespace ATM.BLL.Implementation
             continueOrEndProcess.Answer();
         }
 
-        public void PayBill(Bill bill)
+        public void PayBill()
         {
-            Console.WriteLine(nameof(bill));
+            IBillPayment billPayment = new BillPayment();
+            EnterBillToPay: message.Alert("Which bill do you want to pay.");
+            Console.WriteLine("1.\t Airtime\n2.\t Cable Transmission\n3.\t Nepa");
+            if(int.TryParse(Console.ReadLine(), out int answer))
+            {
+                switch (answer)
+                {
+                    case (int)SwitchCase.One: 
+                            billPayment.Airtime();
+                        break;
+                    case (int)SwitchCase.Two:
+                        billPayment.CableTransmission();
+                        break;
+                    case (int)SwitchCase.Three:
+                        billPayment.Nepa();
+                        break;
+                    default: message.Error("Entered input was not in the option.");
+                        goto EnterBillToPay;
+                }
+            }
         }
 
         public void CreateAccount()

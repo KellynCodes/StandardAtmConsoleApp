@@ -11,6 +11,12 @@ namespace ATM.BLL.Implementation
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(message);
             Console.ResetColor();
+        }  
+        public void Danger(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(message);
+            Console.ResetColor();
         } 
         public void Success(string message)
         {

@@ -1,6 +1,7 @@
 ﻿using ATM.BLL.Interfaces;
 using ATM.DATA.DataBase;
 using ATM.DATA.Domain;
+using ATM.UI;
 using StandardAtmConsoleApp.ATM.DATA.Enums;
 using StandardAtmConsoleApp.Helpers;
 
@@ -11,6 +12,7 @@ namespace ATM.BLL.Implementation
         static readonly IAtmService atmService = new AtmService();
         public static Account SessionUser { get; set; } = new Account(); 
         private readonly static Message message = new();
+        private readonly static IContinueOrEndProcess continueOrEndProcess = new ContinueOrEndProcess();
 
         /// <summary>
         /// Login Validation.
@@ -60,6 +62,8 @@ namespace ATM.BLL.Implementation
                                 break;
                             case (int)SwitchCase.Four: atmService.Deposit();
                                 break;
+                            case (int)SwitchCase.Five: atmService.PayBill();
+                                break;
                             default:
                                 
                                 message.Error("Entered value was not in the list");
@@ -85,15 +89,15 @@ namespace ATM.BLL.Implementation
         /// When user wants to recet Pin
         /// <param name="accNo"></param>
 
-        public void ResetPin()
+        public async Task ResetPin()
         {
-            EnterUserID: Console.WriteLine("Enter your account number");
+            EnterUserID: Console.WriteLine("Enter your user ID");
             if (!long.TryParse(Console.ReadLine(), out long userID))
             {
                 message.Error("Invalid input please try again.");
                 goto EnterUserID;
             }
-            Console.WriteLine("Enter your password");
+            Console.WriteLine("Enter your account number.");
         EnterAccNumber: string accountNumber = Console.ReadLine() ?? string.Empty;
             if (string.IsNullOrWhiteSpace(accountNumber))
             {
@@ -101,25 +105,60 @@ namespace ATM.BLL.Implementation
                 goto EnterAccNumber;
             }
             var userInfo = AtmDB.Account.FirstOrDefault(user => user.AccountNo == accountNumber && user.UserId == userID);
-            if(userInfo != null)
-            {
-
-            }
-            else
+            if(userInfo == null)
             {
                 message.Error("Sorry this user does not exist. Please try again with valid user information.");
                 goto EnterUserID;
             }
+        Question: message.Danger($"Do you want to update your secret pin {userInfo.UserName}");
+            Console.WriteLine("1. YES\t 2. NO");
+            if(!int.TryParse(Console.ReadLine(), out int answer))
+            {
+                message.Error("Invalid input. Please try again.");
+                goto Question;
+            }
+            const int TwoHundredMilliseconds = 200;
+            switch (answer)
+            {
+                case (int)SwitchCase.One:
+                    goto Next;
+                    case (int)SwitchCase.Two:
+                    message.Alert("You have canceled this operation.");
+                   await Task.Delay(TwoHundredMilliseconds);
+                    continueOrEndProcess.Answer();
+                    break;
+                default: message.Error("Entered input was not in the case. Please try again.");
+                    goto Question;
+            }
+        Next:
+            message.AlertInfo("Enter your new pin number");
+            string Pin = Console.ReadLine() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(Pin))
+            {
+                message.Error("Input was empty. Do try again.");
+                goto Next;
+            }
+            const int MaximumPinLength = 4;
+            if(Pin.Length > MaximumPinLength || Pin.Length < MaximumPinLength)
+            {
+                message.Error("Sorry Pin cannot be greater or less than four digits. Do try again.");
+                goto Next;
+            }
+            userInfo.Pin = Pin;
+            if(userInfo.Pin == Pin)
+            {
+                message.Success($"{userInfo.UserName} your pin have been updated successfully");
+            }
+            Login();
         }
         /// <summary>
         /// Logout Users
         /// </summary>
-        public void LogOut()
-        {
+        public async Task LogOut()        {
             const int ThreeSeconds = 3000;
             message.Error($"Logging out....\nPLease Wait.");
             Animae.PrintDotAnimation();
-            Thread.Sleep(ThreeSeconds);
+           await Task.Delay(ThreeSeconds);
         }
     }
 }
